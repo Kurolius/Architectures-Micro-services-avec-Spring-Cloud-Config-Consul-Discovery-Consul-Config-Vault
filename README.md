@@ -171,5 +171,270 @@ public class Order {
 
 ![image](https://user-images.githubusercontent.com/84138772/208256207-0be471a2-829e-4d58-ba2c-a808259eeccd.png)
 
+## Frontend :
 
+### Products :
+
+```typescript
+
+@Component({
+  selector: 'app-products',
+  templateUrl: './products.component.html',
+  styleUrls: ['./products.component.css']
+})
+export class ProductsComponent implements OnInit {
+  products : any;
+  constructor(private http:HttpClient) { }
+
+  ngOnInit(): void {
+    this.http.get("http://localhost:9999/inventory-service/products?projection=fullProduct").subscribe({
+      next : (data)=>{
+        this.products = data;
+      },
+      error : (err)=>{
+
+      }
+    })
+  }
+
+}
+
+```
+```html
+<div class="container">
+  <table class="table" *ngIf="products">
+    <thead>
+     <tr>
+       <th>ID</th><th>Name</th><th>Price</th><th>Quantity</th>
+     </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let p of products._embedded.products">
+      <td>{{p.id}}</td>
+      <td>{{p.name}}</td>
+      <td>{{p.price}}</td>
+      <td>{{p.quantity}}</td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+
+```
+
+![image](https://user-images.githubusercontent.com/84138772/208257365-31d088ce-bca0-455c-b415-70abe4dc65c4.png)
+
+### Customers
+
+```typescript
+@Component({
+  selector: 'app-customers',
+  templateUrl: './customers.component.html',
+  styleUrls: ['./customers.component.css']
+})
+export class CustomersComponent implements OnInit {
+  customers : any;
+  constructor(private http: HttpClient, private router:Router) { }
+
+  ngOnInit(): void {
+    this.http.get("http://localhost:9999/customer-service/customers?projection=fullCustomer").subscribe({
+      next : (data)=>{
+        this.customers = data;
+      },
+      error : (err)=>{
+
+      }
+    })
+  }
+
+  getOrders(c: any) {
+    this.router.navigateByUrl("/orders/"+c.id);
+  }
+}
+
+```
+```html
+<div class="container">
+  <table class="table" *ngIf="customers">
+    <thead>
+    <tr>
+      <th>ID</th><th>Name</th><th>Email</th><th>Oders</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let c of customers._embedded.customers">
+      <td>{{c.id}}</td>
+      <td>{{c.name}}</td>
+      <td>{{c.email}}</td>
+      <td>
+        <button class="btn btn-success" (click)="getOrders(c)">Orders</button>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+
+
+```
+
+![image](https://user-images.githubusercontent.com/84138772/208257382-58646818-d479-4025-a6f3-bc36d5766cda.png)
+
+### Orders :
+
+```typescript
+
+@Component({
+  selector: 'app-orders',
+  templateUrl: './orders.component.html',
+  styleUrls: ['./orders.component.css']
+})
+export class OrdersComponent implements OnInit {
+  orders : any;
+  customerId!:number;
+  constructor(private http: HttpClient,
+              private router:Router,
+              private route: ActivatedRoute) {
+    this.customerId = route.snapshot.params['customerId'];
+  }
+
+  ngOnInit(): void {
+    this.http.get("http://localhost:9999/order-service/orders/search/byCustomerId?projection=fullOrder&customerId="+this.customerId)
+      .subscribe({
+      next : (data)=>{
+        this.orders = data;
+      },
+      error : (err)=>{
+
+      }
+    })
+  }
+
+  getOrderDetails(o: any) {
+    this.router.navigateByUrl("/order-details/"+o.id)
+  }
+}
+
+
+```
+```html
+
+<div class="container">
+  <table class="table" *ngIf="orders">
+    <thead>
+    <tr>
+      <th>ID</th><th>Date</th><th>Status</th><th>CustomerId</th><th>List</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let o of orders._embedded.orders">
+      <td>{{o.id}}</td>
+      <td>{{o.createdAt|date:'dd/MM/yyyy'}}</td>
+      <td>{{o.status}}</td>
+      <td>{{o.customerId}}</td>
+      <td>
+        <button class="btn btn-success" (click)="getOrderDetails(o)">Order Details</button>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+
+```
+
+![image](https://user-images.githubusercontent.com/84138772/208257421-ffb0374f-b494-4957-aaae-825cb3f961be.png)
+
+### Order details :
+
+```typescript
+
+@Component({
+  selector: 'app-order-details',
+  templateUrl: './order-details.component.html',
+  styleUrls: ['./order-details.component.css']
+})
+export class OrderDetailsComponent implements OnInit {
+  orderDetails : any;
+  orderId! : number;
+  constructor(private http: HttpClient,
+              private router:Router,
+              private route: ActivatedRoute) {
+    this.orderId = route.snapshot.params['orderId'];
+  }
+
+  ngOnInit(): void {
+    this.http.get("http://localhost:9999/order-service/fullOrder/"+this.orderId)
+      .subscribe({
+      next : (data)=>{
+        this.orderDetails = data;
+      },
+      error : (err)=>{
+
+      }
+    })
+  }
+
+  getOrderDetails(o: any) {
+    this.router.navigateByUrl("/order-details/"+o.id)
+  }
+}
+
+
+```
+```html
+
+
+<div class="container mt-2" *ngIf="orderDetails">
+  <div class="row">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header">Order Id : {{orderId}}</div>
+        <div class="card-body text-sm-start">
+          <ul class="list-group">
+            <li class="list-group-item">Order Id : {{orderId}}</li>
+            <li class="list-group-item">Date : {{orderDetails.createdAt | date : 'dd/MM/yyyy'}}</li>
+            <li class="list-group-item">Status : {{orderDetails.status}}</li>
+            <li class="list-group-item">Customer Id : {{orderDetails.customer.id}}</li>
+            <li class="list-group-item">Customer Name : {{orderDetails.customer.name}}</li>
+            <li class="list-group-item">Customer Email : {{orderDetails.customer.email}}</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card"></div>
+      <div class="card-header">Products</div>
+      <div class="card-body">
+        <table class="table table-striped">
+          <thead>
+            <tr class="bg-dark text-white">
+              <th scope>Id</th>
+              <th scope>Name</th>
+              <th scope>Price</th>
+              <th scope>Quantity</th>
+              <th>Discount</th>
+              <th>Amount</th>
+          </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let pi of orderDetails.productItems" >
+              <td>{{pi.product.id}}</td>
+              <td>{{pi.product.name}}</td>
+              <td class="text-end">{{pi.price | number : '.2'}}</td>
+              <td class="text-end">{{pi.quantity}}</td>
+              <td class="text-end">{{pi.discount | number : '.2'}}</td>
+              <td class="text-end">{{pi.total | number : '.2'}}</td>
+            </tr>
+          <tr class="bg-dark text-white">
+            <td colspan="5" class="text-end text-white">Total</td>
+            <td class="text-end text-white">{{orderDetails.total | number : '.2'}}</td>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+```
+
+![image](https://user-images.githubusercontent.com/84138772/208257468-045c8b58-1fff-4b9a-b406-bcec24042e14.png)
 
