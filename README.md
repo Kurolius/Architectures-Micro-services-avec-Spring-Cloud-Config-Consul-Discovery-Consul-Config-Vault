@@ -154,4 +154,22 @@ public class Order {
 ![image](https://user-images.githubusercontent.com/84138772/208254084-9cb90617-bd4e-4f97-a12b-7798be7ef202.png)
 
 
+## La configuration avec VAULT :
+
+![image](https://user-images.githubusercontent.com/84138772/208255780-77af40f7-4872-4aa2-96aa-5a95fd9ac48a.png)
+
+
+![image](https://user-images.githubusercontent.com/84138772/208255758-cc8cb8c0-4508-4026-ac68-2f9a6dc39cdd.png)
+
+![image](https://user-images.githubusercontent.com/84138772/208255806-49f80eda-a56a-402f-bdf1-a0617c70530a.png)
+
+![image](https://user-images.githubusercontent.com/84138772/208255815-441d658b-0a8c-4614-b6b8-472b4264c3b6.png)
+
+![image](https://user-images.githubusercontent.com/84138772/208255825-dc83af2c-c7ae-46c0-89d5-2db1c33b62e7.png)
+
+### Note : Aprés la configuration par consul config et vault config :
+
+![image](https://user-images.githubusercontent.com/84138772/208256207-0be471a2-829e-4d58-ba2c-a808259eeccd.png)
+
+
 
